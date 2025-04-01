@@ -1,0 +1,4 @@
+/.pytest_cache
+/archived_logs
+/venv
+/__pycache__
