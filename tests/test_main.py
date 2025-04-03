@@ -207,7 +207,6 @@ class Data(BaseCase):
             else:
                 return int(float(number))
         except ValueError:
-            
             return 0
     
             
