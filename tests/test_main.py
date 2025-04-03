@@ -100,6 +100,7 @@ class Data(BaseCase):
         self.followers = 0
         self.following = 0
         self.tweets = 0
+        self.posts = 0
         self.username = info.username if info.username else ""
         self.name = ""
         self.profile_pic_url = ""
@@ -129,10 +130,10 @@ class Data(BaseCase):
 
             
             if self.is_text_visible("Enter your phone number or username"):
-                self.type("input[name='name']", username)
-                self.click('//*[@id="layers"]/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/button[2]')
+                self.type('//input[@name="text"]', username)
+                self.click('//button[@data-testid="ocfEnterTextNextButton"]')
                 self.sleep(5)
-
+                
             
             self.type("input[name='password']", password)
             self.click('/html/body/div/div/div/div[1]/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div[1]/div/div/button')
@@ -146,5 +147,77 @@ class Data(BaseCase):
             raise Exception(f" Login failed! Error: {e}")
 
         print(" Login Successful!")
-
-
+    
+    
+    def test_account(self):
+        self.test_log_in()
+        self.sleep(5)
+        
+        try:
+            self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div[2]/div[1]/div/div/div/div[1]/div/div[2]/div/div[2]/div/a')
+            
+            self.sleep(5)
+        except Exception:
+            print("error log test_account")
+        
+        try:
+            # Find elements containing profile statistics
+            following = self.find_element('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div/div[1]/div[1]/div[5]/div[1]/a')
+            followers = self.find_element('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div/div[1]/div[1]/div[5]/div[2]/a')
+            posts = self.find_element('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[1]/div[1]/div/div/div/div/div/div[2]/div/div')
+            
+            # Extract and print stats text
+            #print(followers.text + " " + following.text + " " + posts.text)
+            
+            # Convert and return the numeric values
+            following_count = self.convert_number(following.text.split()[0])
+            followers_count = self.convert_number(followers.text.split()[0])
+            posts_count = self.convert_number(posts.text.split()[0])
+            self.followers = followers_count
+            self.following = following_count
+            self.posts = posts_count
+            
+            print(f"following: {following_count}  followers  :{followers_count} posts: {posts_count}")
+            
+        except Exception as e:
+            print(f"Error scraping profile stats: {e}")
+            return None, None, None
+            
+    def convert_number(self, number):
+        """
+        Convert a number string with K or M suffix to its integer representation.
+        
+        Args:
+            number: A string representing a number, possibly with K or M suffix
+                (e.g., '10K', '1.5M')
+        
+        Returns:
+            int: The converted integer value 
+        """
+        try:
+            number = str(number).strip()
+            
+            if 'M' in number:
+                value = float(number.replace('M', ''))
+                return int(value * 1_000_000)
+            
+            elif 'K' in number:
+                value = float(number.replace('K', ''))
+                return int(value * 1_000)
+            else:
+                return int(float(number))
+        except ValueError:
+            
+            return 0
+    
+            
+    def test_data_following_followers(self):
+        self.test_account()
+        
+        following_data = []
+        followers_data = []
+        #print(self.following)
+        for i in range(self.following):
+            data = self.find_elements('div[data-testid="cellInnerDiv"]')
+            following_data.append(data)
+        print(following_data.text)
