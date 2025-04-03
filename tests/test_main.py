@@ -190,7 +190,7 @@ class Data(BaseCase):
         Args:
             number: A string representing a number, possibly with K or M suffix
                 (e.g., '10K', '1.5M')
-        
+                
         Returns:
             int: The converted integer value 
         """
