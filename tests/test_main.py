@@ -72,7 +72,7 @@ class Info:
 
 
 info = Info()
-
+"""
 # test Info
 try:
     print(info.test_validate_twitter_url("https://x.com/user123"))  # True
@@ -90,7 +90,7 @@ try:
     print(info.test_validate_login("validUser", "strongPass"))  # True
 except Exception as e:
     print(f"Error: {e}")
-
+"""
 
 class Data(BaseCase):
     
@@ -101,13 +101,16 @@ class Data(BaseCase):
         self.following = 0
         self.tweets = 0
         self.posts = 0
+        self.gmail = ""
         self.username = info.username if info.username else ""
-        self.name = ""
+        self.name_followers = ""
+        self.name_following = ""
+        
         self.profile_pic_url = ""
         self.bio = ""
         self.url = info.url if info.url else ""
 
-    def test_log_in(self, username="", password=""):
+    def test_log_in(self, username="calyvin4", password="nmri@02.com", gmail = "aymannmri05@gmail.com"):
         
         login_url = 'https://x.com/i/flow/login?lang=en'
         self.open(login_url)
@@ -130,7 +133,7 @@ class Data(BaseCase):
 
             
             if self.is_text_visible("Enter your phone number or username"):
-                self.type('//input[@name="text"]', username)
+                self.type('//*[@id="layers"]/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[1]/div/div[2]/label/div/div[2]/div/input', gmail)
                 self.click('//button[@data-testid="ocfEnterTextNextButton"]')
                 self.sleep(5)
                 
@@ -209,14 +212,95 @@ class Data(BaseCase):
         except ValueError:
             return 0
     
-            
+    """""    
     def test_data_following_followers(self):
         self.test_account()
         
-        following_data = []
+        following_data = set()
         followers_data = []
         #print(self.following)
+        self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div/div[1]/div[1]/div[5]/div[1]/a')
         for i in range(self.following):
             data = self.find_elements('div[data-testid="cellInnerDiv"]')
-            following_data.append(data)
-        print(following_data.text)
+            for element in data:
+                following_data.append(element.text)
+            #following_data.append(data)
+        print(following_data)
+        
+        """
+    
+
+    def test_data_following_followers(self):  
+        self.test_account()  
+        followers_names = []
+        following_names = []  # Store unique names  
+        self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div/div[1]/div[1]/div[5]/div[1]/a')  
+
+        last_height = 0  
+        attempts = 0  
+        
+        while len(following_names) < self.following:  
+            # Use `BaseCase`'s find_elements method  
+            name_elements = self.find_elements('span.css-1jxf684.r-bcqeeo.r-1ttztb7.r-qvutc0.r-poiln3', by='css selector')  
+
+            for el in name_elements:  
+                name = el.text.strip()  
+                if name.startswith('@') and name not in following_names:  
+                    following_names.append(name)  # Add unique @names only  
+
+            # Scroll down to load more  
+            self.execute_script("window.scrollBy(0, 1000);")  
+            self.sleep(2)  # Reduce wait time for efficiency  
+
+            # Check if new content is loading  
+            new_height = self.execute_script("return document.body.scrollHeight")  
+            if new_height == last_height:  
+                attempts += 1  
+                if attempts >= 3:  # Stop if no new content after 3 tries  
+                    break  
+            else:  
+                attempts = 0  # Reset attempt counter  
+
+            last_height = new_height  
+
+        print(f"🔍 Extracted {len(following_names)} usernames starting with '@' out of {self.following}:")  
+          
+        self.name_following = following_names
+        
+        self.sleep(3)
+        
+        self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[1]/div[1]/div[2]/nav/div/div[2]/div/div[2]/a')
+        
+        while len(followers_names) < self.followers:
+            name_elements = self.find_elements('span.css-1jxf684.r-bcqeeo.r-1ttztb7.r-qvutc0.r-poiln3', by='css selector')  
+
+            for el in name_elements:  
+                name = el.text.strip()  
+                if name.startswith('@') and name not in followers_names:  
+                    followers_names.append(name)
+            
+            
+             # Scroll down to load more  
+            self.execute_script("window.scrollBy(0, 1000);")  
+            self.sleep(2)  # Reduce wait time for efficiency  
+
+            # Check if new content is loading  
+            new_height = self.execute_script("return document.body.scrollHeight")  
+            if new_height == last_height:  
+                attempts += 1  
+                if attempts >= 3:  # Stop if no new content after 3 tries  
+                    break  
+            else:  
+                attempts = 0  # Reset attempt counter  
+
+            last_height = new_height  
+
+        print(f"🔍 Extracted {len(followers_names)} usernames starting with '@' out of {self.followers}:") 
+        self.name_followers =followers_names
+        
+        
+        
+    def test_unfollo(self):
+        pass
+        
+        
