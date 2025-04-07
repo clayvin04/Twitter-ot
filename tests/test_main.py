@@ -1,6 +1,7 @@
 from seleniumbase import BaseCase
 import pandas as pd
-
+from test_my_script import Write_tweets
+from unittest.mock import patch
 
 
 class Info:
@@ -110,9 +111,9 @@ class Data(BaseCase):
         self.bio = ""
         self.url = info.url if info.url else ""
 
-    def test_log_in(self, username="", password="", gmail = ""):
+    def test_log_in(self, username="calyvin4", password="nmri@02.com", gmail = "aymannmri05@gmail.com"):
         
-        login_url = 'https://x.com/i/flow/login?lang=en'
+        login_url = 'https://x.com/i/flow/login'
         self.open(login_url)
 
         # Improved Login Validation
@@ -299,8 +300,24 @@ class Data(BaseCase):
         self.name_followers =followers_names
         
         
+    
+    
+    def test_Write_tweets(self):
+        self.test_log_in()
         
-    def test_unfollo(self):
-        pass
+        name = Write_tweets()
+        
+        
+        self.type("[data-testid='tweetTextarea_0']", name)
+        self.sleep(5)
+        self.click('/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/div/div/div/button')
+         
+    
+    
+    
+    
+    
+    #def test_unfollo(self):
+        #pass
         
         
