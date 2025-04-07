@@ -110,7 +110,7 @@ class Data(BaseCase):
         self.bio = ""
         self.url = info.url if info.url else ""
 
-    def test_log_in(self, username="calyvin4", password="nmri@02.com", gmail = "aymannmri05@gmail.com"):
+    def test_log_in(self, username="", password="", gmail = ""):
         
         login_url = 'https://x.com/i/flow/login?lang=en'
         self.open(login_url)
