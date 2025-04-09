@@ -112,7 +112,7 @@ class Data(BaseCase):
         self.bio = ""
         self.url = info.url if info.url else ""
         self.name = ask_name()
-    def test_log_in(self, username="", password="", gmail = ""):
+    def test_log_in(self, username=" ", password=" ", gmail = " "):
         
         login_url = 'https://x.com/i/flow/login'
         self.open(login_url)
