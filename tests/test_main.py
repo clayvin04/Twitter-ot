@@ -1,6 +1,6 @@
 from seleniumbase import BaseCase
 import pandas as pd
-from test_my_script import Write_tweets
+from test_my_script import Write_tweets, unfollo,rmove_followers,ask_name
 from unittest.mock import patch
 
 
@@ -103,6 +103,7 @@ class Data(BaseCase):
         self.tweets = 0
         self.posts = 0
         self.gmail = ""
+        self.name = ""
         self.username = info.username if info.username else ""
         self.name_followers = ""
         self.name_following = ""
@@ -110,8 +111,8 @@ class Data(BaseCase):
         self.profile_pic_url = ""
         self.bio = ""
         self.url = info.url if info.url else ""
-
-    def test_log_in(self, username="calyvin4", password="nmri@02.com", gmail = "aymannmri05@gmail.com"):
+        self.name = ask_name()
+    def test_log_in(self, username="", password="", gmail = ""):
         
         login_url = 'https://x.com/i/flow/login'
         self.open(login_url)
@@ -213,22 +214,7 @@ class Data(BaseCase):
         except ValueError:
             return 0
     
-    """""    
-    def test_data_following_followers(self):
-        self.test_account()
-        
-        following_data = set()
-        followers_data = []
-        #print(self.following)
-        self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div/div[1]/div[1]/div[5]/div[1]/a')
-        for i in range(self.following):
-            data = self.find_elements('div[data-testid="cellInnerDiv"]')
-            for element in data:
-                following_data.append(element.text)
-            #following_data.append(data)
-        print(following_data)
-        
-        """
+
     
 
     def test_data_following_followers(self):  
@@ -283,7 +269,7 @@ class Data(BaseCase):
             
              # Scroll down to load more  
             self.execute_script("window.scrollBy(0, 1000);")  
-            self.sleep(2)  # Reduce wait time for efficiency  
+            self.sleep(2)   
 
             # Check if new content is loading  
             new_height = self.execute_script("return document.body.scrollHeight")  
@@ -299,6 +285,9 @@ class Data(BaseCase):
         print(f"🔍 Extracted {len(followers_names)} usernames starting with '@' out of {self.followers}:") 
         self.name_followers =followers_names
         
+        
+        
+        self.test_load_account_data()
         
     
     
@@ -317,7 +306,51 @@ class Data(BaseCase):
     
     
     
-    #def test_unfollo(self):
-        #pass
+    def test_unfollo(self):
+        self.test_log_in()
         
+        self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div[2]/div[1]/div/div/div/div[1]/div/div[2]/div/div[2]/div/a')
+        self.sleep(5)
+        self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div/div[1]/div[1]/div[5]/div[1]/a')
         
+        number = unfollo()
+        n = int(number)
+        self.sleep(3)
+        for i in range(1, n+1):
+            self.find_element(f"/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/section/div/div/div[{i}]/div/div/button/div/div[2]/div[1]/div[1]/div/div[2]/div/a/div/div/span")
+            self.click(f"/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/section/div/div/div[{i}]/div/div/button/div/div[2]/div[1]/div[2]/button")
+            self.sleep(10)
+            
+            self.click('/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div/div[2]/div[2]/div[2]/button[1]')
+    
+    def test_rmove_followers(self):
+        self.test_log_in()
+        self.sleep(5)
+        self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div[2]/div[1]/div/div/div/div[1]/div/div[2]/div/div[2]/div/a')
+        self.sleep(5)
+        self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div/div[1]/div[1]/div[5]/div[2]/a')
+        self.click('/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[1]/div[1]/div[2]/nav/div/div[2]/div/div[2]/a')
+        
+        number = rmove_followers()
+        n = int(number)
+        for i in range(1, n+1):
+            self.find_element(f"/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/section/div/div/div[{i}]/div/div/button/div/div[2]/div[1]/div[1]/div/div[2]/div[1]/a/div/div/span")
+            self.click(f"/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/section/div/div/div[{i}]/div/div/button/div/div[2]/div/div[2]/div[1]/button")
+            self.sleep(10)
+            
+            self.click('/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div/div[2]/div[2]/div[2]/button[1]')
+           
+    def test_load_account_data(self):
+        data_user = {
+            'name' : self.name,
+            'followers' : self.name_followers,
+            'following': self.name_following,
+            'posts' : self.posts
+            
+        }    
+        
+        df1 = pd.DataFrame(data_user)
+        print(df1)
+        
+
+       
