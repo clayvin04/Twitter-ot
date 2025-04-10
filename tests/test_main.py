@@ -107,12 +107,11 @@ class Data(BaseCase):
         self.username = info.username if info.username else ""
         self.name_followers = ""
         self.name_following = ""
-        
         self.profile_pic_url = ""
         self.bio = ""
         self.url = info.url if info.url else ""
-        self.name = ask_name()
-    def test_log_in(self, username=" ", password=" ", gmail = " "):
+        
+    def test_log_in(self, username, password, gmail):
         
         login_url = 'https://x.com/i/flow/login'
         self.open(login_url)
@@ -154,8 +153,8 @@ class Data(BaseCase):
         print(" Login Successful!")
     
     
-    def test_account(self):
-        self.test_log_in()
+    def test_account(self, username, password, gmail):
+        self.test_log_in(username, password, gmail)
         self.sleep(5)
         
         try:
@@ -217,9 +216,9 @@ class Data(BaseCase):
 
     
 
-    def test_data_following_followers(self):  
-        self.test_account()  
-        followers_names = []
+    def test_data_following(self, username, password, gmail):  
+        self.test_account( username, password, gmail)  
+        
         following_names = []  # Store unique names  
         self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div/div[1]/div[1]/div[5]/div[1]/a')  
 
@@ -249,15 +248,21 @@ class Data(BaseCase):
                 attempts = 0  # Reset attempt counter  
 
             last_height = new_height  
-
+        print(following_names)
         print(f"🔍 Extracted {len(following_names)} usernames starting with '@' out of {self.following}:")  
           
         self.name_following = following_names
         
-        self.sleep(3)
         
-        self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[1]/div[1]/div[2]/nav/div/div[2]/div/div[2]/a')
         
+    
+    def test_data_followers(self, username, password, gmail):
+        self.test_account( username, password, gmail)
+        last_height = 0  
+        attempts = 0
+        self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div/div[1]/div[1]/div[5]/div[2]/a')
+        self.click('/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[1]/div[1]/div[2]/nav/div/div[2]/div/div[2]/a')
+        followers_names = []
         while len(followers_names) < self.followers:
             name_elements = self.find_elements('span.css-1jxf684.r-bcqeeo.r-1ttztb7.r-qvutc0.r-poiln3', by='css selector')  
 
@@ -282,22 +287,24 @@ class Data(BaseCase):
 
             last_height = new_height  
 
+        print(followers_names)
         print(f"🔍 Extracted {len(followers_names)} usernames starting with '@' out of {self.followers}:") 
         self.name_followers =followers_names
         
         
         
-        self.test_load_account_data()
+        
+        
         
     
     
-    def test_Write_tweets(self):
-        self.test_log_in()
-        
-        name = Write_tweets()
+    def test_Write_tweets(self, username, password, gmail,tweet):
+        self.test_log_in(username, password, gmail)
         
         
-        self.type("[data-testid='tweetTextarea_0']", name)
+        
+        
+        self.type("[data-testid='tweetTextarea_0']", tweet)
         self.sleep(5)
         self.click('/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/div/div/div/button')
          
@@ -350,7 +357,56 @@ class Data(BaseCase):
         }    
         
         df1 = pd.DataFrame(data_user)
-        print(df1)
+        
+        
+        
+        
+    def test_bot(self):
+        keep_scraping = True
+        keep_cleaning = True
+        
+        print('\n Welcome to Twitter-Bot Interface ')
+        print(' Type `stop`, `s`, or `f` at any time to terminate.')
+        method = input("Type `scrape` to scrape accounts, `add` to write tweets, or `followers` to manage followers: ").lower().strip()
+        
+        print(" To proceed, you must enter your Twitter account's username and password.")
+        username = input('Account\'s username: ')
+        password = input('Account\'s password:  ')
+        gmail   = input('Account\'s email:  ')
+        
+        
+        if method == 'scrape':
+            while keep_scraping:
+                confirm = input(" Do you want to see the account stats? (yes/no): ").strip().lower()
+                if confirm == 'yes':
+                    self.test_account(username = username, password = password, gmail = gmail)
+                else:
+                    keep_scraping = False
+        elif method == 'add':
+            while keep_scraping:
+                tweet = input("Please enter a tweet (or type 'done' to finish): ").strip().lower()
+                if tweet.lower() == 'done':
+                    keep_scraping = False
+                    
+                else:
+                      self.test_Write_tweets(username = username, password = password, gmail = gmail, tweet = tweet)
+            
+        elif method == 'followers':
+            while keep_cleaning:
+                name_followers = input("Which one do you want to check name — 'followers' or 'following'?: ").strip().lower()
+                if name_followers == 'followers':
+                    self.test_data_followers(username = username, password = password, gmail = gmail)
+                elif name_followers == 'following':
+                    self.test_data_following(username = username, password = password, gmail = gmail)
+                else:
+                    keep_cleaning =False
+                    
+                    
+                
+
+        
+        
+        
         
 
        
