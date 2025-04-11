@@ -1,6 +1,6 @@
 from seleniumbase import BaseCase
 import pandas as pd
-from test_my_script import Write_tweets, unfollo,rmove_followers,ask_name
+
 from unittest.mock import patch
 
 
@@ -313,15 +313,15 @@ class Data(BaseCase):
     
     
     
-    def test_unfollo(self):
-        self.test_log_in()
+    def test_unfollo(self, username, password, gmail,num):
+        self.test_log_in( username, password, gmail)
         
         self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div[2]/div[1]/div/div/div/div[1]/div/div[2]/div/div[2]/div/a')
         self.sleep(5)
         self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div/div[1]/div[1]/div[5]/div[1]/a')
         
-        number = unfollo()
-        n = int(number)
+        
+        n = int(num)
         self.sleep(3)
         for i in range(1, n+1):
             self.find_element(f"/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/section/div/div/div[{i}]/div/div/button/div/div[2]/div[1]/div[1]/div/div[2]/div/a/div/div/span")
@@ -330,16 +330,16 @@ class Data(BaseCase):
             
             self.click('/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div/div[2]/div[2]/div[2]/button[1]')
     
-    def test_rmove_followers(self):
-        self.test_log_in()
+    def test_rmove_followers(self, username, password, gmail,num):
+        self.test_log_in( username, password, gmail)
         self.sleep(5)
         self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div[2]/div[1]/div/div/div/div[1]/div/div[2]/div/div[2]/div/a')
         self.sleep(5)
         self.click('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div/div[1]/div[1]/div[5]/div[2]/a')
         self.click('/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[1]/div[1]/div[2]/nav/div/div[2]/div/div[2]/a')
         
-        number = rmove_followers()
-        n = int(number)
+        
+        n = int(num)
         for i in range(1, n+1):
             self.find_element(f"/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/section/div/div/div[{i}]/div/div/button/div/div[2]/div[1]/div[1]/div/div[2]/div[1]/a/div/div/span")
             self.click(f"/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/section/div/div/div[{i}]/div/div/button/div/div[2]/div/div[2]/div[1]/button")
@@ -393,12 +393,29 @@ class Data(BaseCase):
             
         elif method == 'followers':
             while keep_cleaning:
+                
+                choice = input(" Remove a random 'follower' or 'following'? Type your choice: ").strip().lower()
                 name_followers = input("Which one do you want to check name — 'followers' or 'following'?: ").strip().lower()
+                
                 if name_followers == 'followers':
                     self.test_data_followers(username = username, password = password, gmail = gmail)
+                
                 elif name_followers == 'following':
                     self.test_data_following(username = username, password = password, gmail = gmail)
+                
+                elif choice == 'follower':
+                    
+                    num = input('How many followers do you want to remove? Enter a number:')
+                    self.test_rmove_followers(username = username, password = password, gmail = gmail, num=num)
+                
+                elif choice == 'following':
+                    
+                    num = input('How many following do you want to remove? Enter a number:')
+                    self.test_unfollo(username = username, password = password, gmail = gmail, num=num)
+                
+                
                 else:
+                    print(f"log out{username}......." )
                     keep_cleaning =False
                     
                     
