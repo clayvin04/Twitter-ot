@@ -1,7 +1,7 @@
 from seleniumbase import BaseCase
 import pandas as pd
 
-from unittest.mock import patch
+
 
 
 class Info:
