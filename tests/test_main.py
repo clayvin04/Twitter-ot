@@ -417,6 +417,8 @@ class Data(BaseCase):
                 else:
                     print(f"log out{username}......." )
                     keep_cleaning =False
+        else:
+            print("error : ")
                     
                     
                 
